@@ -1,0 +1,21 @@
+[package]
+name = "simulation"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+rand = "0.8.5"
+lattice-qcd-rs = { version = "0.2.1", git = "https://github.com/ABouttefeux/lattice-qcd-rs" } 
+rand_xoshiro = "0.6.0"
+
+[[bin]]
+name = "pmt_noise2"
+path = "src/pmt_noise2.rs"
+
+[[bin]]
+name = "pmt_noise3"
+path = "src/pmt_noise3.rs"
+
+[[bin]]
+name = "qcd"
+path = "src/qcd.rs"

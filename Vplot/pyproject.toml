@@ -1,0 +1,33 @@
+[project]
+name = "vplot"
+version = "0.1.0"
+description = "Add your description here"
+authors = [
+    { name = "jijinbei", email = "hikoharu14142@outlook.jp" }
+]
+dependencies = [
+    "ipykernel>=6.29.4",
+    "matplotlib>=3.9.0",
+    "numpy>=2.0.0",
+    "pandas>=2.2.2",
+    "polars>=0.20.31",
+    "scipy>=1.14.0",
+    "emcee>=3.1.6",
+    "scikit-learn>=1.5.0",
+]
+readme = "README.md"
+requires-python = ">= 3.8"
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.rye]
+managed = true
+dev-dependencies = []
+
+[tool.hatch.metadata]
+allow-direct-references = true
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/vplot"]

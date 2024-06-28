@@ -1,0 +1,81 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include "camdrv.h"
+#include "toyocamac.h"
+#include <time.h>
+
+void handleError(const char *errorMessage) {
+    fprintf(stderr, "%s\n", errorMessage);
+    exit(EXIT_FAILURE);
+}
+
+void clear_camac_data(int stationNo, int address) {
+    int function = 9;
+    int data = 0;
+    int result = camac_24(stationNo, address, function, &data);
+    if (result != 0) {
+        handleError("Failed to clear CAMAC data.");
+    }
+}
+
+void read_camac_data(int stationNo, int address, int *data) {
+    int function = 0;
+    int result = camac_24(stationNo, address, function, data);
+    if (result != 0) {
+        handleError("Failed to read CAMAC data.");
+    }
+}
+
+int main(int argc, char *argv[])
+{
+    if (argc < 2) {
+        handleError("Usage: ./scaler <number_of_events>");
+    }
+
+    const int nevent = atoi(argv[1]);
+    if (nevent <= 0) {
+        handleError("The number of events must be a positive integer.");
+    }
+
+    int n = 2; // Station number
+    int a; // Channel
+    int lam = 0;
+    FILE *fp;
+
+    if (!(fp = fopen("CAMAC.dat", "w"))) {
+        handleError("File Open error!");
+    }
+
+    execz();
+    setei();
+
+    for (int i = 1; i <= nevent; i++) {
+        lam = 0;
+        a = 0;
+        clear_camac_data(n, a);
+
+        a = 1;
+        clear_camac_data(n, a);
+
+        printf("before while lam=%d\n", lam);
+
+        while (lam == 0) {
+            a = 0;
+            read_camac_data(n, a, &lam);
+        }
+
+        printf("after while lam=%d\n", lam);
+
+        a = 1;
+        int data = 0;
+        read_camac_data(n, a, &data);
+        printf("i = %d: data = %d\n", i, data);
+        fprintf(fp, "%d\n", data);
+
+        printf("\n");
+    }
+
+    fclose(fp);
+    execc();
+    return 0;
+}

@@ -55,9 +55,9 @@ init_command = [
     "TRIGger:B:STATE ON", # 2つ目のトリガーを有効にする
     "TRIGger:A:EDGE:SLOpe FALL", # トリガーの経ち下がりでトリガー
     "TRIGger:B:EDGE:SLOpe FALL",
-    "TRIGger:B:EDGE:SOUrce CH2", # 2つ目のトリガーのソースをCH2に設定
-    f"TRIGger:A:LEVel:CH1 {CH1_TRIGGER_LEVEL}e-3", # トリガーレベルを設定
-    f"TRIGger:B:LEVel:CH2 {CH2_TRIGGER_LEVEL}e-3",
+    "TRIGger:A:EDGE:SOUrce CH2", # 2つ目のトリガーのソースをCH2に設定
+    f"TRIGger:B:LEVel:CH1 {CH1_TRIGGER_LEVEL}e-3", # トリガーレベルを設定
+    f"TRIGger:A:LEVel:CH2 {CH2_TRIGGER_LEVEL}e-3",
     f"TRIGger:B:TIMe {DELAY_TIME}e-9", # トリガーの時間を設定
     "TRIGger:B:RESET:TYPe TIMEOut", # TIMEOUTの設定
     f"TRIGger:B:RESET:TIMEOut:TIMe {RESET_TIMEOUT}e-6", # TIMEOUTの時間を設定
@@ -91,14 +91,14 @@ ACQuire_STATE = {
 
 sleep(1) # 同期するまで待つ(TODO: *OPC?でダメだった)
 
-# converter = Converter(scope)
+# converter = Converter(scope) #(TODO: 未実装)
 # converter.
 counter = Counter()
 
 while True:
     state = scope.query("ACQuire:STATE?")
     if state == ACQuire_STATE["STOP"]:
-        bin_wave = scope.query_binary_values("CURVe?", datatype='d', container=np.array, chunk_size = 1024**1024)
+        bin_wave = scope.query_binary_values("CURVe?", datatype='d', is_big_endian=True, container=np.array, chunk_size = 1024**1024)
         print(bin_wave)
         with open('data.csv', 'w') as f:
             writer = csv.writer(f)

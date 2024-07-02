@@ -8,17 +8,51 @@
 #   with-sources: false
 
 -e file:.
+contourpy==1.2.1
+    # via matplotlib
+cycler==0.12.1
+    # via matplotlib
+fonttools==4.53.0
+    # via matplotlib
 ifaddr==0.2.0
     # via zeroconf
+kiwisolver==1.4.5
+    # via matplotlib
+matplotlib==3.9.0
+    # via remoteoscilloscope
+numpy==2.0.0
+    # via contourpy
+    # via matplotlib
+    # via pandas
+packaging==24.1
+    # via matplotlib
+pandas==2.2.2
+    # via remoteoscilloscope
+pillow==10.3.0
+    # via matplotlib
+    # via remoteoscilloscope
 psutil==6.0.0
-    # via remoteoscilloscop
+    # via remoteoscilloscope
+pyparsing==3.1.2
+    # via matplotlib
+python-dateutil==2.9.0.post0
+    # via matplotlib
+    # via pandas
+python-dotenv==1.0.1
+    # via remoteoscilloscope
+pytz==2024.1
+    # via pandas
 pyvisa==1.14.1
     # via pyvisa-py
-    # via remoteoscilloscop
+    # via remoteoscilloscope
 pyvisa-py==0.7.2
-    # via remoteoscilloscop
+    # via remoteoscilloscope
+six==1.16.0
+    # via python-dateutil
 typing-extensions==4.12.2
     # via pyvisa
     # via pyvisa-py
+tzdata==2024.1
+    # via pandas
 zeroconf==0.132.2
-    # via remoteoscilloscop
+    # via remoteoscilloscope

@@ -1,5 +1,5 @@
 [project]
-name = "remoteoscilloscop"
+name = "remoteoscilloscope"
 version = "0.1.0"
 description = "Add your description here"
 authors = [
@@ -10,6 +10,10 @@ dependencies = [
     "pyvisa-py>=0.7.2",
     "psutil>=6.0.0",
     "zeroconf>=0.132.2",
+    "python-dotenv>=1.0.1",
+    "pillow>=10.3.0",
+    "pandas>=2.2.2",
+    "matplotlib>=3.9.0",
 ]
 readme = "README.md"
 requires-python = ">= 3.8"
@@ -26,4 +30,4 @@ dev-dependencies = []
 allow-direct-references = true
 
 [tool.hatch.build.targets.wheel]
-packages = ["src/remoteoscilloscop"]
+packages = ["src/remoteoscilloscope"]

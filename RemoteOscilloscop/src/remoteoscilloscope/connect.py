@@ -1,3 +1,7 @@
+# --------------------------
+# オシロスコープとの接続確認
+# --------------------------
+
 import pyvisa
 import os
 from dotenv import load_dotenv

@@ -6,15 +6,14 @@ authors = [
     { name = "jijinbei", email = "hikoharu14142@outlook.jp" }
 ]
 dependencies = [
+    "ipykernel>=6.29.5",
+    "matplotlib>=3.9.0",
+    "polars>=1.0.0",
+    "python-dotenv>=1.0.1",
     "pyvisa>=1.14.1",
     "pyvisa-py>=0.7.2",
     "psutil>=6.0.0",
     "zeroconf>=0.132.2",
-    "python-dotenv>=1.0.1",
-    "pillow>=10.3.0",
-    "matplotlib>=3.9.0",
-    "polars>=1.0.0",
-    "ipykernel>=6.29.5",
 ]
 readme = "README.md"
 requires-python = ">= 3.8"

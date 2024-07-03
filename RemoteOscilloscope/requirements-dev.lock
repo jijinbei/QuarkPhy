@@ -58,7 +58,6 @@ pexpect==4.9.0
     # via ipython
 pillow==10.4.0
     # via matplotlib
-    # via remoteoscilloscope
 platformdirs==4.2.2
     # via jupyter-core
 polars==1.0.0

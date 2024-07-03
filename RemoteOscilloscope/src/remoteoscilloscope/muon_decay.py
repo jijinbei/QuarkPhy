@@ -10,15 +10,20 @@ from time import sleep
 from muon_decay_lib import * # WARNINGは無視
 
 # --------- 初期設定 ---------
-TIME_GRID_LENGTH = 4 # us
-CH1_SCALE = 7 # mV
+CH1_SCALE = 9 # mV
 CH2_SCALE = 100 # mV
-CH1_TRIGGER_LEVEL = -10 # mV
+CH1_TRIGGER_LEVEL = -6 # mV
 CH2_TRIGGER_LEVEL = -100 # mV
 DELAY_TIME = 50 # ns
 RESET_TIMEOUT = 36 # us
 
-MAX_COUNT = 10 # 崩壊の測定回数
+# 横軸の設定（トレードオフの関係があるので注意）
+RECORD_LENGTH = 50e3 # 1shot分のpt数
+TIME_GRID_LENGTH = 4 # us
+SAMPLERATE = 1.25e9 # Hz (1.25GHz = 1.25e9)
+
+# データ数
+MAX_COUNT = 2 # 崩壊の測定回数
 # ---------------------------
 
 load_dotenv()
@@ -42,6 +47,9 @@ init_command = [
     "CH2:TERmination 50",
 
     # HORIZONTALの設定
+    "HORizontal:MODE MANual", # マニュアルモードに設定
+    f"HORizontal:MODE:RECOrdlength {RECORD_LENGTH}" , # レコード長を設定
+    f"HORizontal:SAMPLERate {SAMPLERATE}", # サンプリングレートを設定
     f"HORizontal:SCAle {TIME_GRID_LENGTH}e-6", # 横軸のスケールを設定
     "HORizontal:POSition 90", # 90%ずらす
 
@@ -70,44 +78,25 @@ config_command = [
     # 'DATa:STOP?',  # データの終了位置 1shot分のpt数
 ]
 
-# オシロスコープの状態
-ACQuire_STATE = {
-    "STOP": "0\n",
-    "RUN": "1\n",
-}
 
 run_command(scope, init_command)
 sleep(1) # 同期するまで待つ(TODO: *OPC?でダメだった)
 run_command(scope, config_command)
 sleep(1) # 同期するまで待つ(TODO: *OPC?でダメだった)    
 filename = get_filename()
-create_csv(filename)
+create_csv(filename, ['TIME', 'CH1'])
 sleep(1) # 同期するまで待つ(TODO: *OPC?でダメだった)
 create_metadata(scope, filename)
-
-def get_waveform(scope: pyvisa.resources.MessageBasedResource):
-    run_command(scope, ["ACQuire:STATE ON", "ACQuire:STOPAfter SEQuence"]) # single/seq mode"
-    counter = Counter()
-    while True:
-        state = scope.query("ACQuire:STATE?")
-        if state == ACQuire_STATE["STOP"]:
-            print("Hit!!!!!")
-            t, v_ch1 = SAVe_DATa_SOUrce(1, scope)
-            _, v_ch2 = SAVe_DATa_SOUrce(2, scope)
-            add_csv((t, v_ch1, v_ch2), filename)
-            break
-        counter.print()
-        sleep(2)
 
 for i in range(MAX_COUNT):
     try:
         print(f"------------------------\n{i+1}回目の計測\n------------------------")
-        get_waveform(scope)
+        get_waveform_1Ch(scope, filename)
     
     except KeyboardInterrupt:
         print("コマンドを停止しました。")
-        print("計測を終了します。")
         break
+print("計測を終了します。")
 
 scope.close()
 rm.close()

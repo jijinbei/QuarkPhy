@@ -18,7 +18,7 @@ CH2_TRIGGER_LEVEL = -100 # mV
 DELAY_TIME = 50 # ns
 RESET_TIMEOUT = 36 # us
 
-MAX_COUNT = 2 # 崩壊の測定回数
+MAX_COUNT = 10 # 崩壊の測定回数
 # ---------------------------
 
 load_dotenv()
@@ -68,7 +68,6 @@ config_command = [
     "DATa:SOUrce CH1", # データのソースをCH1に設定
     # "DATa:STARt?", # データの開始位置 デフォルトで1
     # 'DATa:STOP?',  # データの終了位置 1shot分のpt数
-    # 'HORizontal:RECOrdlength?',  # データのpt数(DATa:STOP?と一致するか確認)
 ]
 
 # オシロスコープの状態
@@ -82,32 +81,33 @@ sleep(1) # 同期するまで待つ(TODO: *OPC?でダメだった)
 run_command(scope, config_command)
 sleep(1) # 同期するまで待つ(TODO: *OPC?でダメだった)    
 filename = get_filename()
-make_csv(filename)
+create_csv(filename)
+sleep(1) # 同期するまで待つ(TODO: *OPC?でダメだった)
+create_metadata(scope, filename)
 
 def get_waveform(scope: pyvisa.resources.MessageBasedResource):
-    scope.write("ACQuire:STATE ON")
-    scope.write("ACQuire:STOPAfter SEQuence") # single/seq mode"
+    run_command(scope, ["ACQuire:STATE ON", "ACQuire:STOPAfter SEQuence"]) # single/seq mode"
     counter = Counter()
     while True:
         state = scope.query("ACQuire:STATE?")
         if state == ACQuire_STATE["STOP"]:
-            print("hit!!!!!")
+            print("Hit!!!!!")
             t, v_ch1 = SAVe_DATa_SOUrce(1, scope)
             _, v_ch2 = SAVe_DATa_SOUrce(2, scope)
-            write_csv((t, v_ch1, v_ch2), filename)
+            add_csv((t, v_ch1, v_ch2), filename)
             break
         counter.print()
         sleep(2)
 
 for i in range(MAX_COUNT):
     try:
-        print(f"{i+1}回目の計測")
+        print(f"------------------------\n{i+1}回目の計測\n------------------------")
         get_waveform(scope)
     
     except KeyboardInterrupt:
         print("コマンドを停止しました。")
+        print("計測を終了します。")
         break
 
 scope.close()
 rm.close()
-

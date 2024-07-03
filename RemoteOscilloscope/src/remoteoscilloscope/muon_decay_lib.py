@@ -54,35 +54,56 @@ def get_filename():
     filename = f"{now.strftime('%Y%m%d')}.csv"
     return filename
 
-def make_csv(filename: str):
+def create_csv(filename: str, header: list = ['TIME', 'CH1', 'CH2']):
     if not os.path.exists(filename):
         with open(filename, mode="w") as f:
-            header = ['TIME', 'CH1', 'CH2']
             writer = csv.writer(f)
-            writer.writerow(header)
+            if header == None:
+                pass
+            else:
+                writer.writerow(header)
     else:
         print(f"{filename}が存在します。")
         print("ファイル名を書き換えてください。")
         print("プログラムを終了します。")
         exit()
         
-def write_csv(data: tuple, filename: str):
+def add_csv(data: tuple, filename: str):
     t, v1, v2 = data
     with open(filename, mode="+a") as f:
         writer = csv.writer(f)
         for i in range(len(t)):
             writer.writerow([t[i], v1[i], v2[i]])
 
-def make_metadata(scope: pyvisa.resources.MessageBasedResource, filename: str):
+def rm_new_line_code(string: str):
+    return string.replace("\n", "")
+
+# メタデータの例
+# Model,MSO44
+# Label,
+# Waveform Type,ANALOG
+# Horizontal Units,s
+# Sample Interval,6.40000000e-10
+# Record Length,156250
+# Zero Index,149999.25000000
+# Vertical Units,V
+# FastFrame Count,50
+# ANALOG_Thumbnail,
+# yOffset,0.00000000e+00
+# yPosition,4.24000000e+00
+
+def create_metadata(scope: pyvisa.resources.MessageBasedResource, filename: str):
     metafile = "meta_" + filename
-    make_csv(metafile)
-    with open(metafile) as f:
-        writer = csv.writer(f)
-        writer.writerow(["WFMOutpre:NR_Pt?", scope.query('WFMOutpre:NR_Pt?')])
-        writer.writerow(["WFMOutpre:PT_Off?", scope.query('WFMOutpre:PT_Off?')])
-        writer.writerow(["WFMOutpre:XINcr?", scope.query('WFMOutpre:XINcr?')])
-        writer.writerow(["WFMOutpre:XZEro?", scope.query('WFMOutpre:XZEro?')])
-        writer.writerow(["WFMOutpre:YMUlt?", scope.query('WFMOutpre:YMUlt?')])
-        writer.writerow(["WFMOutpre:YZEro?", scope.query('WFMOutpre:YZEro?')])
-        writer.writerow(["WFMOutpre:YOFf?", scope.query('WFMOutpre:YOFf?')])
-    
+    if not os.path.exists(metafile):
+        with open(metafile, mode="w") as f:
+            writer = csv.writer(f)
+            writer.writerow(["Sample Interval", rm_new_line_code(scope.query("WFMOutpre:XINcr?"))])
+            writer.writerow(["Record Length", rm_new_line_code(scope.query("WFMOutpre:NR_Pt?"))])
+            writer.writerow(["Zero Index", rm_new_line_code(scope.query("WFMOutpre:PT_Off?"))])
+            writer.writerow(["yOffset", rm_new_line_code(scope.query("WFMOutpre:YZEro?"))])
+            # writer.writerow(["yPosition", rm_new_line_code(scope.query("WFMOutpre:YOFf?"))])
+    else:  
+        print(f"{metafile}が存在します。")
+        print("ファイル名を書き換えてください。")
+        print("プログラムを終了します。")
+        exit()

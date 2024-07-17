@@ -12,3 +12,4 @@ wheels/
 # data, figures
 **/data/
 **/images/
+**/*png
